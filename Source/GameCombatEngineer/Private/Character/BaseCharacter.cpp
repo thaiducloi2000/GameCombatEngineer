@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DataAsset/InputData.h"
+#include "DataAsset/CharacterData.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -16,25 +17,9 @@ ABaseCharacter::ABaseCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
-
-	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
-	// instead of recompiling to adjust them
-	GetCharacterMovement()->JumpZVelocity = 700.f;
-	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
-	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
-
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f;
 	CameraBoom->bUsePawnControlRotation = true;
-
-	CameraBoom->AddLocalOffset(FVector(0.0f, 1.0f, 40.0f));
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -45,6 +30,31 @@ void ABaseCharacter::NotifyControllerChanged()
 {
 
 }
+
+void ABaseCharacter::OnConstruction(const FTransform& Transform) 
+{
+	Super::OnConstruction(Transform);
+
+	if (CharacterData) 
+	{
+		// Configure character movement
+		GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...
+		GetCharacterMovement()->RotationRate = CharacterData->RotationRate; // ...at this rotation rate
+
+		// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
+		// instead of recompiling to adjust them
+		GetCharacterMovement()->JumpZVelocity = CharacterData->JumpZVelocity;
+		GetCharacterMovement()->AirControl = CharacterData->AirControl;
+		GetCharacterMovement()->MaxWalkSpeed = CharacterData->MaxWalkSpeed;
+		GetCharacterMovement()->MinAnalogWalkSpeed = CharacterData->MinAnalogWalkSpeed;
+		GetCharacterMovement()->BrakingDecelerationWalking = CharacterData->BrakingDecelerationWalking;
+		GetCharacterMovement()->BrakingDecelerationFalling = CharacterData->BrakingDecelerationFalling;
+
+		CameraBoom->TargetArmLength = CharacterData->TargetArmLength;
+		CameraBoom->AddLocalOffset(CharacterData->LocalOffset);
+	}
+}
+
 // Called to bind functionality to input
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

@@ -10,6 +10,7 @@ class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
 class UInputData;
+class UCharacterData;
 
 UCLASS()
 class GAMECOMBATENGINEER_API ABaseCharacter : public ACharacter
@@ -24,6 +25,9 @@ class GAMECOMBATENGINEER_API ABaseCharacter : public ACharacter
 
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputData* InputData;
+
+	UPROPERTY(EditDefaultsOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UCharacterData* CharacterData;
 
 public:
 	// Sets default values for this character's properties
@@ -52,4 +56,6 @@ protected:
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void OnConstruction(const FTransform& Transform) override;
 };
