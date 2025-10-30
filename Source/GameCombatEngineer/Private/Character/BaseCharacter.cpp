@@ -17,29 +17,37 @@ ABaseCharacter::ABaseCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->bUsePawnControlRotation = true;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	FollowCamera->SetupAttachment(CameraBoom); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 }
 void ABaseCharacter::NotifyControllerChanged()
 {
-
+	Super::NotifyControllerChanged();
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController) {
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			if (InputData != nullptr)
+			{
+				Subsystem->AddMappingContext(InputData->DefaultMappingContext, 0);
+			}
+		}
+	}
 }
 
-void ABaseCharacter::OnConstruction(const FTransform& Transform) 
+void ABaseCharacter::SetupCharacterData()
 {
-	Super::OnConstruction(Transform);
-
-	if (CharacterData) 
+	if (CharacterData)
 	{
 		// Configure character movement
-		GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...
-		GetCharacterMovement()->RotationRate = CharacterData->RotationRate; // ...at this rotation rate
+		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);/*CharacterData->RotationRate*/; // ...at this rotation rate
 
 		// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 		// instead of recompiling to adjust them
@@ -82,15 +90,12 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			EnhancedInputComponent->BindAction(InputData->AttackAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Attack);
 		}
 	}
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+}
 
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-	{
-		if (InputData != nullptr)
-		{
-			Subsystem->AddMappingContext(InputData->DefaultMappingContext, 0);
-		}
-	}
+void ABaseCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	SetupCharacterData();
 }
 
 void ABaseCharacter::Move(const FInputActionValue& Value)
@@ -100,6 +105,8 @@ void ABaseCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
+		FString InputText = FString::Printf(TEXT("Move Input: X=%.2f | Y=%.2f"), MovementVector.X, MovementVector.Y);
+		GEngine->AddOnScreenDebugMessage(-1, 0.05f, FColor::Cyan, InputText);
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -112,14 +119,15 @@ void ABaseCharacter::Move(const FInputActionValue& Value)
 		//const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		const FVector RightDirection = YawRotation.RotateVector(FVector::RightVector);
 		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-		GEngine->AddOnScreenDebugMessage(
-			/* Key */ -1,
-			/* TimeToDisplay */ 5.0f,
-			/* Color */ FColor::Green,
-			/* Message */ TEXT("Tehee Move")
-		);
+		if (MovementVector.Y != 0.f) 
+		{
+			AddMovementInput(ForwardDirection, MovementVector.Y);	
+		}
+
+		if (MovementVector.X != 0.f) 
+		{
+			AddMovementInput(RightDirection, MovementVector.X);
+		}
 	}
 }
 
@@ -127,12 +135,6 @@ void ABaseCharacter::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
-	GEngine->AddOnScreenDebugMessage(
-		/* Key */ -1,
-		/* TimeToDisplay */ 5.0f,
-		/* Color */ FColor::Green,
-		/* Message */ TEXT("Tehee Look")
-	);
 	if (Controller != nullptr)
 	{
 		// add yaw and pitch input to controller
@@ -143,32 +145,14 @@ void ABaseCharacter::Look(const FInputActionValue& Value)
 
 void ABaseCharacter::Attack(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(
-		/* Key */ -1,
-		/* TimeToDisplay */ 5.0f,
-		/* Color */ FColor::Green,
-		/* Message */ TEXT("Tehee Attack")
-	);
 }
 
 void ABaseCharacter::Run(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(
-		/* Key */ -1,
-		/* TimeToDisplay */ 5.0f,
-		/* Color */ FColor::Green,
-		/* Message */ TEXT("Tehee Run")
-	);
 	GetCharacterMovement()->MaxWalkSpeed = 1000.f;
 }
 
 void ABaseCharacter::StopRun(const FInputActionValue& Value)
 {
 	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
-	GEngine->AddOnScreenDebugMessage(
-		/* Key */ -1,
-		/* TimeToDisplay */ 5.0f,
-		/* Color */ FColor::Green,
-		/* Message */ TEXT("Tehee StopRun")
-	);
 }
