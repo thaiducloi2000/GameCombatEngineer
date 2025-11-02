@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interface/AttackInterface.h"
+#include "Enum/CombatState.h"
 #include "BaseCharacter.generated.h"
 
 class USpringArmComponent;
@@ -11,9 +13,10 @@ class UInputMappingContext;
 struct FInputActionValue;
 class UInputData;
 class UCharacterData;
+class UAttackComponent;
 
 UCLASS()
-class GAMECOMBATENGINEER_API ABaseCharacter : public ACharacter
+class GAMECOMBATENGINEER_API ABaseCharacter : public ACharacter, public IAttackInterface
 {
 	GENERATED_BODY()
 
@@ -29,14 +32,31 @@ class GAMECOMBATENGINEER_API ABaseCharacter : public ACharacter
 	UPROPERTY(EditDefaultsOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UCharacterData* CharacterData;
 
+	UPROPERTY(EditDefaultsOnly, Category = AttackComponent, meta = (AllowPrivateAccess = "true"))
+	UAttackComponent* AttackComponent;
+
+private :
+	ECombatState bCombatState = ECombatState::Ready;
+
 public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
+	virtual void I_PlayAttackMontage(UAnimMontage* AttackMontage) override;
+	virtual void I_EndAttackMontage() override;
+	virtual FVector I_GetSocketLocation(const FName& SocketName) const override;
+
+	virtual void I_ANS_TraceHit() override;
+
+	virtual void I_ANS_BeginTraceHit() override;
+
+	virtual void I_ANS_Combo() override;
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 protected:
+
+	UAnimMontage* GetDirectHitReactMontage(const FVector& Direction) const;
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
@@ -53,11 +73,30 @@ protected:
 	/* Called for stop run input*/
 	void StopRun(const FInputActionValue& Value);
 
+	UFUNCTION()
+	void HandleHitSomething(const FHitResult& HitResult);
+
+	UFUNCTION()
+	void HandleTakePointDamage(AActor* DamagedActor,
+		float Damage,
+		AController* InstigatedBy,
+		FVector HitLocation, UPrimitiveComponent*
+		FHitComponent, FName BoneName,
+		FVector ShotFromDirection,
+		const class UDamageType* DamageType,
+		AActor* DamageCauser);
+
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void BeginPlay() override;
 
+	virtual void PostInitializeComponents() override;
+	//virtual void Tick(float DeltaSecond) override;
+
 	void SetupCharacterData();
+
+public:
+	FORCEINLINE ECombatState GetCombatState() const { return bCombatState; }
 };

@@ -7,15 +7,31 @@
 #include "CharacterData.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class GAMECOMBATENGINEER_API UCharacterData : public UDataAsset
 {
 	GENERATED_BODY()
-	
+
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	TArray<UAnimMontage*> AttackMontages;
+#pragma region MyRegion
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* HitReactMontage_Front;
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* HitReactMontage_Back;
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* HitReactMontage_Right;
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* HitReactMontage_Left;
+#pragma endregion
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Data, meta = (AllowPrivateAccess = "true"))
 	FRotator RotationRate;
@@ -43,4 +59,25 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Data, meta = (AllowPrivateAccess = "true"))
 	FVector LocalOffset;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tray Hit", meta = (AllowPrivateAccess = "true"))
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectType;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tray Hit", meta = (AllowPrivateAccess = "true"))
+	TArray<AActor*> ActorToIgnore;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tray Hit", meta = (AllowPrivateAccess = "true"))
+	float TraceRadius = 20.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tray Hit", meta = (AllowPrivateAccess = "true"))
+	FName TraceStart;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tray Hit", meta = (AllowPrivateAccess = "true"))
+	FName TraceEnd;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tray Hit", meta = (AllowPrivateAccess = "true"))
+	bool bDrawDebugTrace = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float Damage = 20.0f;
 };

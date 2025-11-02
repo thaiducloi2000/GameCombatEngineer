@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "CharacterAnimationInstance.generated.h"
 
+class ABaseCharacter;
 class UCharacterMovementComponent;
 
 UCLASS()
@@ -21,10 +22,13 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	float Speed = 0.0f;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bShouldBlendLowerUpper = true;
 private:
 
 	UPROPERTY()
-	ACharacter* Character;
+	ABaseCharacter* Character;
 
 	UPROPERTY()
 	UCharacterMovementComponent* MovementComponent;

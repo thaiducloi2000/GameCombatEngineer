@@ -5,7 +5,10 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DataAsset/InputData.h"
+#include "Component/AttackComponent.h"
 #include "DataAsset/CharacterData.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -26,6 +29,38 @@ ABaseCharacter::ABaseCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("Attack Component"));
+}
+void ABaseCharacter::I_PlayAttackMontage(UAnimMontage* AttackMontage)
+{
+	PlayAnimMontage(AttackMontage);
+}
+void ABaseCharacter::I_EndAttackMontage()
+{
+	if (AttackComponent) {
+		AttackComponent->EndAttack();
+	}
+}
+FVector ABaseCharacter::I_GetSocketLocation(const FName& SocketName) const
+{
+	if (GetMesh() == nullptr) return FVector();
+	return GetMesh()->GetSocketLocation(SocketName);
+}
+void ABaseCharacter::I_ANS_TraceHit()
+{
+	if (AttackComponent)
+		AttackComponent->TraceHit();
+}
+void ABaseCharacter::I_ANS_BeginTraceHit()
+{
+	if (AttackComponent)
+		AttackComponent->SetupTraceHit();
+}
+void ABaseCharacter::I_ANS_Combo()
+{
+	if (AttackComponent)
+		AttackComponent->Combo();
 }
 void ABaseCharacter::NotifyControllerChanged()
 {
@@ -87,7 +122,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			EnhancedInputComponent->BindAction(InputData->RunAction, ETriggerEvent::Completed, this, &ABaseCharacter::StopRun);
 
 			// Attack
-			EnhancedInputComponent->BindAction(InputData->AttackAction, ETriggerEvent::Triggered, this, &ABaseCharacter::Attack);
+			EnhancedInputComponent->BindAction(InputData->AttackAction, ETriggerEvent::Started, this, &ABaseCharacter::Attack);
 		}
 	}
 }
@@ -95,7 +130,46 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	OnTakePointDamage.AddDynamic(this, &ABaseCharacter::HandleTakePointDamage);
+}
+
+void ABaseCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 	SetupCharacterData();
+	if (AttackComponent)
+	{
+		AttackComponent->HitSomethingDelegate.BindDynamic(this, &ABaseCharacter::HandleHitSomething);
+	}
+}
+
+//void ABaseCharacter::Tick(float DeltaSecond)
+//{
+//	Super::Tick(DeltaSecond);
+//}
+
+UAnimMontage* ABaseCharacter::GetDirectHitReactMontage(const FVector& Direction) const
+{
+	if (CharacterData == nullptr) return nullptr;
+
+	const auto dot = FVector::DotProduct(Direction, GetActorForwardVector());
+	const bool bShouldUseDot = FMath::Abs(dot) > 0.5;
+	if (bShouldUseDot) 
+	{
+		if (dot > 0.0)
+			return CharacterData->HitReactMontage_Back;
+		else
+			return CharacterData->HitReactMontage_Front;
+	}
+	else 
+	{
+		auto cross = FVector::CrossProduct(Direction, GetActorForwardVector());
+		if (cross.Z > 0.0)
+			return CharacterData->HitReactMontage_Right;
+		else
+			return CharacterData->HitReactMontage_Left;
+	}
+	return nullptr;
 }
 
 void ABaseCharacter::Move(const FInputActionValue& Value)
@@ -105,8 +179,6 @@ void ABaseCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		FString InputText = FString::Printf(TEXT("Move Input: X=%.2f | Y=%.2f"), MovementVector.X, MovementVector.Y);
-		GEngine->AddOnScreenDebugMessage(-1, 0.05f, FColor::Cyan, InputText);
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -119,12 +191,12 @@ void ABaseCharacter::Move(const FInputActionValue& Value)
 		//const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		const FVector RightDirection = YawRotation.RotateVector(FVector::RightVector);
 		// add movement 
-		if (MovementVector.Y != 0.f) 
+		if (MovementVector.Y != 0.f)
 		{
-			AddMovementInput(ForwardDirection, MovementVector.Y);	
+			AddMovementInput(ForwardDirection, MovementVector.Y);
 		}
 
-		if (MovementVector.X != 0.f) 
+		if (MovementVector.X != 0.f)
 		{
 			AddMovementInput(RightDirection, MovementVector.X);
 		}
@@ -145,6 +217,9 @@ void ABaseCharacter::Look(const FInputActionValue& Value)
 
 void ABaseCharacter::Attack(const FInputActionValue& Value)
 {
+	if (AttackComponent) {
+		AttackComponent->RequestAttack();
+	}
 }
 
 void ABaseCharacter::Run(const FInputActionValue& Value)
@@ -155,4 +230,39 @@ void ABaseCharacter::Run(const FInputActionValue& Value)
 void ABaseCharacter::StopRun(const FInputActionValue& Value)
 {
 	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+}
+
+void ABaseCharacter::HandleHitSomething(const FHitResult& HitResult)
+{
+	if (CharacterData == nullptr) return;
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, TEXT("Handle Hit Something"));
+
+	auto Actor = HitResult.GetActor();
+
+	if (Actor == nullptr) return;
+
+	const auto Direction = UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(), Actor->GetActorLocation());
+
+	UGameplayStatics::ApplyPointDamage(
+		Actor,
+		CharacterData->Damage,
+		Direction,
+		HitResult,
+		GetController(),
+		this,
+		UDamageType::StaticClass()
+	);
+}
+
+void ABaseCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Handle Take Point Damage"));
+	if (CharacterData)
+	{
+		PlayAnimMontage(GetDirectHitReactMontage(ShotFromDirection));
+		bCombatState = ECombatState::Beaten;
+	}
 }
