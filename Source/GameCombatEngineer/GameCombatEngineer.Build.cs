@@ -8,7 +8,7 @@ public class GameCombatEngineer : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput","UMG","AIModule" });
         PublicIncludePaths.AddRange(
     new string[] { "GameCombatEngineer/Public" }
 );

@@ -14,6 +14,7 @@ struct FInputActionValue;
 class UInputData;
 class UCharacterData;
 class UAttackComponent;
+class UHealthComponent;
 
 UCLASS()
 class GAMECOMBATENGINEER_API ABaseCharacter : public ACharacter, public IAttackInterface
@@ -29,13 +30,17 @@ class GAMECOMBATENGINEER_API ABaseCharacter : public ACharacter, public IAttackI
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputData* InputData;
 
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UCharacterData* CharacterData;
 
 	UPROPERTY(EditDefaultsOnly, Category = AttackComponent, meta = (AllowPrivateAccess = "true"))
 	UAttackComponent* AttackComponent;
 
-private :
+	UPROPERTY(EditDefaultsOnly, Category = HealthComponent, meta = (AllowPrivateAccess = "true"))
+	UHealthComponent* HealthComponent;
+
+private:
 	ECombatState bCombatState = ECombatState::Ready;
 
 public:

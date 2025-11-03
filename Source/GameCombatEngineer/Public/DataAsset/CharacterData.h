@@ -18,7 +18,7 @@ class GAMECOMBATENGINEER_API UCharacterData : public UDataAsset
 public:
 	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	TArray<UAnimMontage*> AttackMontages;
-#pragma region MyRegion
+#pragma region Animation Montage
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* HitReactMontage_Front;
@@ -32,6 +32,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* HitReactMontage_Left;
 #pragma endregion
+
+#pragma region Effect
+
+	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (AllowPrivateAccess = "true"))
+	UParticleSystem* HitImpactEffect;
+#pragma endregion
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Data, meta = (AllowPrivateAccess = "true"))
 	FRotator RotationRate;
@@ -78,6 +85,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Tray Hit", meta = (AllowPrivateAccess = "true"))
 	bool bDrawDebugTrace = true;
 
+	//Stat
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	float Damage = 20.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float Health = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float MaxHealth = 100.0f;
 };
