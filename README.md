@@ -25,12 +25,12 @@ The architecture emphasizes **data-driven design**, scalability, and code reusab
 
 ---
 
-### 🔁 Dynamic Character & Camera
+### 👁️ Dynamic Character & Camera
 
 * Third-person camera using **USpringArmComponent** and **UCameraComponent**.
 * Smooth camera follow behavior with yaw control.
 * Character **rotation aligned with movement direction**.
-* **Runtime adjustable movement speed** (walk ⇄ run toggle).
+* **Runtime adjustable movement speed** (walk ↔ run toggle).
 
 ---
 
@@ -108,21 +108,19 @@ GameCombatEngineer/
 
 ---
 
-## 🧠 Design Diagram
-```mermaid
-flowchart TD
-    A[Player Input (Enhanced Input)] --> B[UAttackComponent]
-    B --> C[IAttackInterface::I_PlayAttackMontage()]
-    C --> D[Animation Montage / Notifies]
-    D --> E[UAttackComponent::TraceHit()]
-    E --> F[SphereTraceMultiForObjects]
-    F --> G[HitResult / Apply Damage]
-    G --> H[Enemy AI Response]
-```
+## 🧠 Design Flow
+
+**Combat Flow:**
+
+1. Player input triggers `UAttackComponent::RequestAttack()`.
+2. `IAttackInterface::I_PlayAttackMontage()` plays the Montage from `CharacterData`.
+3. Animation Notifies call `TraceHit()` for real-time collision detection.
+4. `SphereTraceMultiForObjects()` detects hit actors and logs impact points.
+5. AI Enemy reacts based on Behavior Tree logic.
 
 ---
 
-## 📹 Demo
+## 📺 Demo
 
 🎥 **YouTube Link:** *Coming Soon*
 *(Showcasing ground combo chain, smooth transition, and enemy AI behavior)*
@@ -149,6 +147,6 @@ All used assets are from **Unreal Engine samples** or custom-created placeholder
 ## 👤 Author
 
 **Thái Đức Lợi**
-Gameplay Programmer | Combat System Designer
+Gameplay Programmer
 📧 [thaiducloi2000@gmail.com](mailto:thaiducloi2000@gmail.com)
 🔗 [GitHub: thaiducloi2000](https://github.com/thaiducloi2000)
