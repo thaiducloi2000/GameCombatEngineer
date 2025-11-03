@@ -7,7 +7,6 @@
 void UAN_OnAttackCallback::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp,Animation,EventReference);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, TEXT("End Attack"));
 	if (MeshComp == nullptr) return;
 	auto AttackInterface = TScriptInterface<IAttackInterface>(MeshComp -> GetOwner());
 	if (AttackInterface) {

@@ -7,6 +7,7 @@
 #include "EnemyAIController.generated.h"
 
 class IEnemyInterface;
+class UAISenseConfig_Sight;
 
 UCLASS()
 class GAMECOMBATENGINEER_API AEnemyAIController : public AAIController
@@ -14,9 +15,15 @@ class GAMECOMBATENGINEER_API AEnemyAIController : public AAIController
 	GENERATED_BODY()
 
 public:
+
+	AEnemyAIController();
+
 	UFUNCTION(BlueprintCallable)
 	void UpdatePatrolLocation();
 
+private:
+	UFUNCTION()
+	void HandleActorPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
@@ -28,4 +35,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	FName Key_PatrolLocation;
+
+	UPROPERTY(VisibleAnywhere)
+	UAIPerceptionComponent* AIPerceptionComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UAISenseConfig_Sight* AISightConfig;
 };
