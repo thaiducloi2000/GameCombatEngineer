@@ -123,7 +123,7 @@ GameCombatEngineer/
 ## 📺 Demo
 
 🎥 **YouTube Link:** [Watch Demo on YouTube](https://youtu.be/EWb-KxYfXTg)
-*(Showcasing ground combo chain, smooth transition, and enemy AI behavior)*
+*(Showcasing ground combo chain, smooth transition, and enemy AI behavior - keep updating)*
 
 ---
 
