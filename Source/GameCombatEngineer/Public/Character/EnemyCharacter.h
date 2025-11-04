@@ -18,6 +18,10 @@ class GAMECOMBATENGINEER_API AEnemyCharacter : public ABaseCharacter, public IEn
 public:
 	virtual FVector I_GetPatrolLocation() override;
 
+	virtual void I_HandleSeePlayer(AActor* PlayerActor) override;
+
+	virtual void I_HandleLostPlayer(AActor* PlayerActor) override;
+
 private:
 	UPROPERTY(EditInstanceOnly, Category = "Patrol");
 	TArray<AActor*> PatrolPoints;

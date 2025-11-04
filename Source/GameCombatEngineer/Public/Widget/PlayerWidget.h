@@ -7,6 +7,7 @@
 #include "PlayerWidget.generated.h"
 
 class UProgressBar;
+class UTextBlock;
 
 UCLASS()
 class GAMECOMBATENGINEER_API UPlayerWidget : public UUserWidget
@@ -14,9 +15,17 @@ class GAMECOMBATENGINEER_API UPlayerWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void UpdateHealthBar_Player(float newPercent);
-
+	void UpdateHealthBar_Player(float Health, float MaxHealth);
+	void UpdateHealthBar_Enemy(float Health, float MaxHealth);
+	void ShowEnemyStat();
+	void HideEnemyStat();
 private: 
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* HealthBar_Player;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* HealthBar_Enemy;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* HealthText_Enemy;
 };

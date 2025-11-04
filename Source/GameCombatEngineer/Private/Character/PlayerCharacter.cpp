@@ -8,10 +8,26 @@
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	auto PlayerWidget = CreateWidget<UPlayerWidget>(GetWorld(), PlayerWidgetClass);
+	bPlayerWidget = CreateWidget<UPlayerWidget>(GetWorld(), PlayerWidgetClass);
 
-	if (PlayerWidget != nullptr && HealthComponent != nullptr) {
-		PlayerWidget->AddToViewport();
-		PlayerWidget->UpdateHealthBar_Player(HealthComponent->Health / HealthComponent->MaxHealth);
+	if (bPlayerWidget != nullptr && HealthComponent != nullptr) {
+		bPlayerWidget->AddToViewport();
+		bPlayerWidget->UpdateHealthBar_Player(HealthComponent->Health, HealthComponent->MaxHealth);
+		bPlayerWidget->HideEnemyStat();
+	}
+}
+
+void APlayerCharacter::I_EnterCombat(float Health_Target, float MaxHealth_Target)
+{
+	if (bPlayerWidget != nullptr && HealthComponent != nullptr) {
+		bPlayerWidget->ShowEnemyStat();
+		bPlayerWidget->UpdateHealthBar_Enemy(Health_Target, MaxHealth_Target);
+	}
+}
+
+void APlayerCharacter::I_ExitCombat()
+{
+	if (bPlayerWidget != nullptr && HealthComponent != nullptr) {
+		bPlayerWidget->HideEnemyStat();
 	}
 }

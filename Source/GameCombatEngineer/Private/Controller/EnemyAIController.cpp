@@ -31,12 +31,13 @@ void AEnemyAIController::UpdatePatrolLocation()
 void AEnemyAIController::HandleActorPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (Stimulus.WasSuccessfullySensed()) {
-
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Find Player"));
+		if (EnemyInterface)
+			EnemyInterface->I_HandleSeePlayer(Actor);
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Lost Player"));
+		EnemyInterface->I_HandleLostPlayer(Actor);
 	}
 }
 

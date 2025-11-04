@@ -29,4 +29,7 @@ public:
 	virtual void I_ANS_TraceHit() = 0;
 	virtual void I_ANS_BeginTraceHit() = 0;
 	virtual void I_ANS_Combo() = 0;
+
+	virtual void I_EnterCombat(float Health_Target,float MaxHealth_Target);
+	virtual void I_ExitCombat();
 };
