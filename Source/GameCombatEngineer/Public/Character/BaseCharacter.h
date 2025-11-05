@@ -21,16 +21,11 @@ class GAMECOMBATENGINEER_API ABaseCharacter : public ACharacter, public IAttackI
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
+protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputData* InputData;
 
-protected:
 	UPROPERTY(EditDefaultsOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UCharacterData* CharacterData;
 
@@ -55,34 +50,19 @@ public:
 	virtual void I_ANS_BeginTraceHit() override;
 
 	virtual void I_ANS_Combo() override;
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	virtual void I_RequestAttack() override;
+	virtual void I_EndHitReact() override;
+	void ChangeWalkSpeed(float NewSpeed);
 protected:
 
 	UAnimMontage* GetDirectHitReactMontage(const FVector& Direction) const;
-
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
-
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
-
-	/* Called for attack input*/
-	void Attack(const FInputActionValue& Value);
-
-	/* Called for run input*/
-	void Run(const FInputActionValue& Value);
-
-	/* Called for stop run input*/
-	void StopRun(const FInputActionValue& Value);
 
 	UFUNCTION()
 	void HandleHitSomething(const FHitResult& HitResult);
 
 	UFUNCTION()
-	void HandleTakePointDamage(AActor* DamagedActor,
+	virtual void HandleTakePointDamage(AActor* DamagedActor,
 		float Damage,
 		AController* InstigatedBy,
 		FVector HitLocation, UPrimitiveComponent*
@@ -93,14 +73,10 @@ protected:
 
 	virtual void NotifyControllerChanged() override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	virtual void BeginPlay() override;
 
 	virtual void PostInitializeComponents() override;
 	//virtual void Tick(float DeltaSecond) override;
-
-	void SetupCharacterData();
 
 public:
 	FORCEINLINE ECombatState GetCombatState() const { return bCombatState; }

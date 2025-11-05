@@ -8,18 +8,19 @@
 
 class UCharacterData;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class GAMECOMBATENGINEER_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UHealthComponent();
 	void SetupComponent(UCharacterData* CharacterData);
+	void UpdateHealthByDamage(float Damage);
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	float Health = 0.0f;
 	float MaxHealth = 0.0f;

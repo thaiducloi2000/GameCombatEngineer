@@ -28,16 +28,47 @@ void AEnemyAIController::UpdatePatrolLocation()
 		Blackboard->SetValueAsVector(Key_PatrolLocation, EnemyInterface->I_GetPatrolLocation());
 }
 
+void AEnemyAIController::CheckDistance(AActor* AIActor, AActor* Player, float AttackRange)
+{
+	if (AIActor == nullptr) return;
+
+	const float distance = AIActor->GetDistanceTo(Player);
+
+	if (distance <= AttackRange) {
+		if (Blackboard)
+			Blackboard->SetValueAsBool(Key_ShouldAttack, true);
+	}
+	else {
+		if (Blackboard)
+			Blackboard->SetValueAsBool(Key_ShouldAttack, false);
+	}
+}
+
 void AEnemyAIController::HandleActorPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (Stimulus.WasSuccessfullySensed()) {
-		if (EnemyInterface)
-			EnemyInterface->I_HandleSeePlayer(Actor);
+		SeePlayer(Actor);
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Lost Player"));
 		EnemyInterface->I_HandleLostPlayer(Actor);
+	}
+}
+
+void AEnemyAIController::SeePlayer(AActor* Actor)
+{
+	if (EnemyInterface)
+		EnemyInterface->I_HandleSeePlayer(Actor);
+
+	if (Blackboard)
+	{
+		Blackboard->SetValueAsBool(Key_IsCombat, true);
+		Blackboard->SetValueAsObject(Key_PlayerActor, Actor);
+	}
+
+	if (AIPerceptionComponent && AIPerceptionComponent->OnTargetPerceptionUpdated.IsBound()) {
+		AIPerceptionComponent->OnTargetPerceptionUpdated.RemoveDynamic(this, &AEnemyAIController::HandleActorPerceptionUpdate);
 	}
 }
 
@@ -50,6 +81,6 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	if (BehaviorTree != nullptr)
 		RunBehaviorTree(BehaviorTree);
 
-	if (AIPerceptionComponent)
+	if (AIPerceptionComponent && AIPerceptionComponent->OnTargetPerceptionUpdated.IsBound() == false)
 		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::HandleActorPerceptionUpdate);
 }

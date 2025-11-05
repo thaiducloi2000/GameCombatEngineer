@@ -21,9 +21,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdatePatrolLocation();
 
+	UFUNCTION(BlueprintCallable)
+	void CheckDistance(AActor* AIActor, AActor* Player, float AttackRange);
+
 private:
 	UFUNCTION()
 	void HandleActorPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
+	void SeePlayer(AActor* Actor);
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
@@ -35,6 +39,16 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	FName Key_PatrolLocation;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName Key_ShouldAttack;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName Key_IsCombat;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName Key_PlayerActor;
+
 
 	UPROPERTY(VisibleAnywhere)
 	UAIPerceptionComponent* AIPerceptionComponent;
