@@ -24,10 +24,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CheckDistance(AActor* AIActor, AActor* Player, float AttackRange);
 
+	void BackToPatrol();
+
 private:
 	UFUNCTION()
 	void HandleActorPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 	void SeePlayer(AActor* Actor);
+	void ExitCombatTimerFinished();
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
@@ -41,10 +44,7 @@ private:
 	FName Key_PatrolLocation;
 
 	UPROPERTY(EditDefaultsOnly)
-	FName Key_ShouldAttack;
-
-	UPROPERTY(EditDefaultsOnly)
-	FName Key_IsCombat;
+	FName Key_AIState;
 
 	UPROPERTY(EditDefaultsOnly)
 	FName Key_PlayerActor;
@@ -55,4 +55,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UAISenseConfig_Sight* AISightConfig;
+
+	FTimerHandle ExitCombatTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ExitCombatSecond = 3.0f;
 };

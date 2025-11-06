@@ -22,6 +22,9 @@ public:
 	virtual void I_HandleSeePlayer(AActor* PlayerActor) override;
 
 	virtual void I_HandleLostPlayer(AActor* PlayerActor) override;
+private: 
+	UFUNCTION()
+	void HandlePlayerExitCombat();
 protected:
 	virtual void BeginPlay() override;
 	virtual void HandleTakePointDamage(AActor* DamagedActor,

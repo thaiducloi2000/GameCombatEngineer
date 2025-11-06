@@ -128,17 +128,21 @@ void APlayerCharacter::Attack(const FInputActionValue& Value)
 	//}
 }
 
-void APlayerCharacter::Run(const FInputActionValue& Value)
+void APlayerCharacter::ExitCombat(const FInputActionValue& Value)
 {
-	if (CharacterData)
-		ChangeWalkSpeed(CharacterData->RunSpeed);
+	if (bPlayerWidget) {
+		bPlayerWidget->HideEnemyStat();
+	}
+
+	if (I_OnExitCombat.IsBound() == true)
+		I_OnExitCombat.Execute();
 }
 
-void APlayerCharacter::StopRun(const FInputActionValue& Value)
-{
-	if (CharacterData)
-		ChangeWalkSpeed(CharacterData->MaxWalkSpeed);
-}
+//void APlayerCharacter::StopRun(const FInputActionValue& Value)
+//{
+//	if (CharacterData)
+//		ChangeWalkSpeed(CharacterData->MaxWalkSpeed);
+//}
 
 void APlayerCharacter::SetupCharacterData()
 {
@@ -201,8 +205,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			EnhancedInputComponent->BindAction(InputData->LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 
 			// Run
-			EnhancedInputComponent->BindAction(InputData->RunAction, ETriggerEvent::Started, this, &APlayerCharacter::Run);
-			EnhancedInputComponent->BindAction(InputData->RunAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopRun);
+			EnhancedInputComponent->BindAction(InputData->RunAction, ETriggerEvent::Started, this, &APlayerCharacter::ExitCombat);
+			//EnhancedInputComponent->BindAction(InputData->RunAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopRun);
 
 			// Attack
 			EnhancedInputComponent->BindAction(InputData->AttackAction, ETriggerEvent::Started, this, &APlayerCharacter::Attack);

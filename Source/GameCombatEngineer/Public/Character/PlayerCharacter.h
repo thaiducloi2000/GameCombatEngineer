@@ -49,10 +49,10 @@ private:
 	void Attack(const FInputActionValue& Value);
 
 	/* Called for run input*/
-	void Run(const FInputActionValue& Value);
+	void ExitCombat(const FInputActionValue& Value);
 
 	/* Called for stop run input*/
-	void StopRun(const FInputActionValue& Value);
+	//void StopRun(const FInputActionValue& Value);
 	void SetupCharacterData();
 
 	virtual void PostInitializeComponents() override;

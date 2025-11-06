@@ -4,6 +4,7 @@
 #include "Character/EnemyCharacter.h"
 #include "Interface/AttackInterface.h"
 #include "DataAsset/CharacterData.h"
+#include "Controller/EnemyAIController.h"
 #include "Component/HealthComponent.h"
 
 FVector AEnemyCharacter::I_GetPatrolLocation()
@@ -18,13 +19,19 @@ FVector AEnemyCharacter::I_GetPatrolLocation()
 
 void AEnemyCharacter::I_HandleSeePlayer(AActor* PlayerActor)
 {
-	Attacker = TScriptInterface<IAttackInterface>(PlayerActor);
-	if (Attacker && HealthComponent) {
-		Attacker->I_EnterCombat(HealthComponent->Health, HealthComponent->MaxHealth);
-	}
-
 	if (CharacterData)
 		ChangeWalkSpeed(CharacterData->CombatSpeed);
+
+	Attacker = TScriptInterface<IAttackInterface>(PlayerActor);
+
+	if (Attacker == nullptr) return;
+
+	if (Attacker->I_OnExitCombat.IsBound() == false)
+		Attacker->I_OnExitCombat.BindDynamic(this, &AEnemyCharacter::HandlePlayerExitCombat);
+
+	if (HealthComponent) {
+		Attacker->I_EnterCombat(HealthComponent->Health, HealthComponent->MaxHealth);
+	}
 }
 
 void AEnemyCharacter::I_HandleLostPlayer(AActor* PlayerActor)
@@ -33,6 +40,14 @@ void AEnemyCharacter::I_HandleLostPlayer(AActor* PlayerActor)
 	if (Attacker) {
 		Attacker->I_ExitCombat();
 	}
+}
+
+void AEnemyCharacter::HandlePlayerExitCombat()
+{
+	auto EnemyAIController = Cast<AEnemyAIController>(GetController());
+
+	if (EnemyAIController)
+		EnemyAIController->BackToPatrol();
 }
 
 void AEnemyCharacter::BeginPlay()

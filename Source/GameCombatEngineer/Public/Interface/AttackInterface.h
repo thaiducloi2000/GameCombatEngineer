@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "AttackInterface.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE(FExitCombatDelegate);
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UAttackInterface : public UInterface
@@ -21,6 +22,8 @@ class GAMECOMBATENGINEER_API IAttackInterface
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+public:
+	FExitCombatDelegate I_OnExitCombat;
 public:
 	virtual void I_PlayAttackMontage(UAnimMontage* AttackMontage) = 0;
 	virtual void I_EndAttackMontage() = 0;

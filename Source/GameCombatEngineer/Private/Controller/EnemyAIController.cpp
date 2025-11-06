@@ -5,6 +5,7 @@
 #include "Controller/EnemyAIController.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Enum/AIState.h"
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -36,12 +37,26 @@ void AEnemyAIController::CheckDistance(AActor* AIActor, AActor* Player, float At
 
 	if (distance <= AttackRange) {
 		if (Blackboard)
-			Blackboard->SetValueAsBool(Key_ShouldAttack, true);
+			Blackboard->SetValueAsEnum(Key_AIState, (uint8)EAIState::Attack);
 	}
 	else {
 		if (Blackboard)
-			Blackboard->SetValueAsBool(Key_ShouldAttack, false);
+			Blackboard->SetValueAsEnum(Key_AIState, (uint8)EAIState::Combat);
 	}
+}
+
+void AEnemyAIController::BackToPatrol()
+{
+	if (Blackboard)
+		Blackboard->SetValueAsEnum(Key_AIState, (uint8)EAIState::Patrol);
+
+	GetWorldTimerManager().SetTimer(ExitCombatTimer,this,&AEnemyAIController::ExitCombatTimerFinished,ExitCombatSecond);
+}
+
+void AEnemyAIController::ExitCombatTimerFinished()
+{
+	if (AIPerceptionComponent && AIPerceptionComponent->OnTargetPerceptionUpdated.IsBound() == false)
+		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::HandleActorPerceptionUpdate);
 }
 
 void AEnemyAIController::HandleActorPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
@@ -63,7 +78,7 @@ void AEnemyAIController::SeePlayer(AActor* Actor)
 
 	if (Blackboard)
 	{
-		Blackboard->SetValueAsBool(Key_IsCombat, true);
+		Blackboard->SetValueAsEnum(Key_AIState, (uint8)EAIState::Combat);
 		Blackboard->SetValueAsObject(Key_PlayerActor, Actor);
 	}
 
