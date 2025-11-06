@@ -31,6 +31,10 @@ void AEnemyAIController::UpdatePatrolLocation()
 
 void AEnemyAIController::CheckDistance(AActor* AIActor, AActor* Player, float AttackRange)
 {
+	if (Player == nullptr) {
+		BackToPatrol();
+		return;
+	}
 	if (AIActor == nullptr) return;
 
 	const float distance = AIActor->GetDistanceTo(Player);

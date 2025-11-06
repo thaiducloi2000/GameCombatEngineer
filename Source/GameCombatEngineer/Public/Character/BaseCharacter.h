@@ -71,6 +71,9 @@ protected:
 		const class UDamageType* DamageType,
 		AActor* DamageCauser);
 
+	void HandleBeaten(const FVector& HitLocation,const FVector& ShotFromDirection);
+	virtual void HandleDead();
+
 	virtual void NotifyControllerChanged() override;
 
 	virtual void BeginPlay() override;

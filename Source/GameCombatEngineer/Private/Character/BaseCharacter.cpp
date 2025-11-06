@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "DataAsset/InputData.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -145,11 +146,17 @@ void ABaseCharacter::HandleHitSomething(const FHitResult& HitResult)
 
 void ABaseCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)
 {
-	if (CharacterData == nullptr) return;
-
 	if (HealthComponent)
 		HealthComponent->UpdateHealthByDamage(Damage);
+	if (HealthComponent->Health > 0.0f)
+		HandleBeaten(HitLocation, ShotFromDirection);
+	else
+		HandleDead();
+}
 
+void ABaseCharacter::HandleBeaten(const FVector& HitLocation, const FVector& ShotFromDirection)
+{
+	if (CharacterData == nullptr) return;
 	UGameplayStatics::SpawnEmitterAtLocation(
 		GetWorld(),
 		CharacterData->HitImpactEffect,
@@ -158,4 +165,22 @@ void ABaseCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, A
 
 	PlayAnimMontage(GetDirectHitReactMontage(ShotFromDirection));
 	bCombatState = ECombatState::Beaten;
+}
+
+void ABaseCharacter::HandleDead()
+{
+	if (CharacterData == nullptr) return;
+
+	float DeadMontageSecond = PlayAnimMontage(CharacterData->DeadMontage);
+	bCombatState = ECombatState::Dead;
+
+	if (GetCharacterMovement())
+		GetCharacterMovement()->StopMovementImmediately();
+
+	if (GetCapsuleComponent() && GetMesh()) {
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	SetLifeSpan(DeadMontageSecond);
 }

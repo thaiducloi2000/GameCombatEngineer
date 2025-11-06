@@ -42,6 +42,15 @@ void AEnemyCharacter::I_HandleLostPlayer(AActor* PlayerActor)
 	}
 }
 
+void AEnemyCharacter::Destroyed()
+{
+	if (Attacker) {
+		Attacker->I_HandleTargetDestroy();
+	}
+
+	Super::Destroyed();
+}
+
 void AEnemyCharacter::HandlePlayerExitCombat()
 {
 	auto EnemyAIController = Cast<AEnemyAIController>(GetController());
@@ -71,4 +80,10 @@ void AEnemyCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, 
 		DamageCauser);
 	if (Attacker && HealthComponent)
 		Attacker->I_HitTarget(HealthComponent->Health, HealthComponent->MaxHealth);
+}
+
+void AEnemyCharacter::HandleDead()
+{
+	Super::HandleDead();
+	DetachFromControllerPendingDestroy();
 }

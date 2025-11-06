@@ -23,7 +23,7 @@ public:
 	virtual void I_ExitCombat() override;
 
 	virtual void I_HitTarget(float Health_Target, float MaxHealth_Target) override;
-
+	virtual void I_HandleTargetDestroy() override;
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
@@ -38,7 +38,8 @@ protected:
 		FVector ShotFromDirection,
 		const class UDamageType* DamageType,
 		AActor* DamageCauser) override;
-private: 
+	virtual void HandleDead() override;
+private:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 

@@ -38,6 +38,7 @@ public:
 	virtual void I_HitTarget(float Health_Target, float MaxHealth_Target);
 
 	virtual void I_EndHitReact() = 0;
+	virtual void I_HandleTargetDestroy();
 	UFUNCTION(BlueprintCallable)
 	virtual void I_RequestAttack() = 0;
 };

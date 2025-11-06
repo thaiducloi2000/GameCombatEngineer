@@ -31,6 +31,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* HitReactMontage_Left;
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* DeadMontage;
 #pragma endregion
 
 #pragma region Effect

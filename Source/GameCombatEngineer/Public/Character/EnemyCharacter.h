@@ -22,6 +22,8 @@ public:
 	virtual void I_HandleSeePlayer(AActor* PlayerActor) override;
 
 	virtual void I_HandleLostPlayer(AActor* PlayerActor) override;
+
+	virtual void Destroyed() override;
 private: 
 	UFUNCTION()
 	void HandlePlayerExitCombat();
@@ -35,6 +37,7 @@ protected:
 		FVector ShotFromDirection,
 		const class UDamageType* DamageType,
 		AActor* DamageCauser) override;
+	virtual void HandleDead() override;
 private:
 	UPROPERTY(EditInstanceOnly, Category = "Patrol");
 	TArray<AActor*> PatrolPoints;

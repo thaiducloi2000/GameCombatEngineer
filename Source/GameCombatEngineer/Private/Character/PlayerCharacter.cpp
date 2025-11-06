@@ -61,6 +61,13 @@ void APlayerCharacter::I_HitTarget(float Health_Target, float MaxHealth_Target)
 	}
 }
 
+void APlayerCharacter::I_HandleTargetDestroy()
+{
+	if (bPlayerWidget != nullptr) {
+		bPlayerWidget->HideEnemyStat();
+	}
+}
+
 
 void APlayerCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)
 {
@@ -75,6 +82,18 @@ void APlayerCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage,
 		DamageCauser);
 	if (bPlayerWidget && HealthComponent)
 		bPlayerWidget->UpdateHealthBar_Player(HealthComponent->Health, HealthComponent->MaxHealth);
+}
+
+void APlayerCharacter::HandleDead()
+{
+	Super::HandleDead();
+	if (bPlayerWidget != nullptr) {
+		bPlayerWidget->RemoveFromParent();
+	}
+
+	auto PlayerControler = Cast<APlayerController>(GetController());
+	if (PlayerControler)
+		DisableInput(PlayerControler);
 }
 
 void APlayerCharacter::Move(const FInputActionValue& Value)

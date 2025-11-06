@@ -17,3 +17,7 @@ void IAttackInterface::I_ExitCombat()
 void IAttackInterface::I_HitTarget(float Health_Target, float MaxHealth_Target)
 {
 }
+
+void IAttackInterface::I_HandleTargetDestroy()
+{
+}
