@@ -101,9 +101,9 @@ GameCombatEngineer/
 | Ground Combo Chain (3+)     | ✅ Completed | 3 attack chain with smooth blend transitions |
 | Smooth Animation Transition | ✅ Completed | Section blending & notifies                  |
 | Enemy AI                    | ✅ Completed | Basic pursuit and attack                     |
-| Air Combo Chain (2+)        | 🚧 Planned  | Will extend from existing montage system     |
-| HUD (HP/Stamina/Combo)      | 🚧 Planned  | Part of UI phase                             |
-| Camera Shake & Collision    | 🚧 Planned  | In next iteration                            |
+| Air Combo Chain (2+)        | 🚧 Planned  | Will extend from existing montage system (and Looking for other aniamtion)|
+| HUD (HP/Stamina/Combo)      | ✅ Completed | Part of UI phase                             |
+| Camera Shake & Collision    | ✅ Completed  | In next iteration                            |
 | GAS Integration             | 🚧 Planned  | Future implementation                        |
 
 ---
