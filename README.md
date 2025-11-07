@@ -145,7 +145,7 @@ GameCombatEngineer/
 
 ## 📺 Demo
 
-🎥 **YouTube Link:** [Watch Demo on YouTube](https://youtu.be/EWb-KxYfXTg)
+🎥 **YouTube Link:** [Watch Demo on YouTube](https://youtu.be/hj1upizdoiI?si=rgC-LJYuFpthSlGB)
 *(Showcasing ground combo chain, smooth transition, and enemy AI behavior - keep updating)*
 
 ---
