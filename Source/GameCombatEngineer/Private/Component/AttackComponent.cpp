@@ -27,9 +27,18 @@ void UAttackComponent::BeginPlay()
 
 void UAttackComponent::RequestAttack()
 {
-	const bool bCanAttack = bIsAttacking == false || bCanCombo == true;
-	if (bCanAttack) Attack();
+	if (CanAttack()) Attack();
 	else bSaveAttack = true;
+}
+
+bool UAttackComponent::CanAttack() const
+{
+
+	if (AttackInterface == nullptr || CharacterData == nullptr) return false;
+	const bool Condition_1 = bIsAttacking == false || bCanCombo == true;
+	const bool Condition_2 = AttackInterface->I_IsReadyAttack();
+	const bool Condition_3 = AttackInterface->I_CheckEnoughStamina(CharacterData->CostStaminaPerAttack);
+	return Condition_1 && Condition_2 && Condition_3;
 }
 
 void UAttackComponent::Attack()
@@ -41,7 +50,10 @@ void UAttackComponent::Attack()
 		bIsAttacking = true;
 		bCanCombo = false;
 
-		bAttackIndex = (bAttackIndex + 1) % CharacterData->AttackMontages.Num();
+		if (RequestAttackType == EAttackType::Normal)
+			bAttackIndex = (bAttackIndex + 1) % CharacterData->AttackMontages.Num();
+
+		AttackInterface->I_HandleAttackSuccess();
 	}
 }
 
@@ -56,7 +68,7 @@ void UAttackComponent::EndAttack()
 void UAttackComponent::Combo()
 {
 	bCanCombo = true;
-	if (bSaveAttack) 
+	if (bSaveAttack)
 	{
 		RequestAttack();
 		bSaveAttack = false;
@@ -77,7 +89,7 @@ void UAttackComponent::TraceHit()
 		CharacterData->TraceObjectType,
 		false,
 		CharacterData->ActorToIgnore,
-		CharacterData-> bDrawDebugTrace ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None,
+		CharacterData->bDrawDebugTrace ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None,
 		HitResults, true,
 		FLinearColor::Red,
 		FLinearColor::Green);
@@ -96,8 +108,6 @@ void UAttackComponent::TraceHit()
 
 void UAttackComponent::HandleHitResult(const FHitResult& Result)
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Cyan, Result.BoneName.ToString());
 	if (HitSomethingDelegate.IsBound())
 		HitSomethingDelegate.Execute(Result);
 }
@@ -105,9 +115,14 @@ void UAttackComponent::HandleHitResult(const FHitResult& Result)
 UAnimMontage* UAttackComponent::GetAttackMontage()
 {
 	if (CharacterData == nullptr) return nullptr;
+
+	if (RequestAttackType == EAttackType::Strong)
+		return CharacterData->StrongAttackMontages;
+
+
 	if (CharacterData->AttackMontages.IsEmpty()) return nullptr;
 	return CharacterData->AttackMontages[bAttackIndex];
-	
+
 }
 
 void UAttackComponent::SetupTraceHit()

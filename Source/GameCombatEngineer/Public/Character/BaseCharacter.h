@@ -15,6 +15,7 @@ class UInputData;
 class UCharacterData;
 class UAttackComponent;
 class UHealthComponent;
+class UStaminaComponent;
 
 UCLASS()
 class GAMECOMBATENGINEER_API ABaseCharacter : public ACharacter, public IAttackInterface
@@ -35,6 +36,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = HealthComponent, meta = (AllowPrivateAccess = "true"))
 	UHealthComponent* HealthComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category = HealthComponent, meta = (AllowPrivateAccess = "true"))
+	UStaminaComponent* StaminaComponent;
 private:
 	ECombatState bCombatState = ECombatState::Ready;
 
@@ -54,6 +57,11 @@ public:
 	virtual void I_RequestAttack() override;
 	virtual void I_EndHitReact() override;
 	void ChangeWalkSpeed(float NewSpeed);
+
+	virtual void I_HandleAttackSuccess() override;
+	virtual bool I_IsReadyAttack() const override;
+	virtual bool I_CheckEnoughStamina(float Cost) const override;
+	virtual bool I_IsAttacking() const override;
 protected:
 
 	UAnimMontage* GetDirectHitReactMontage(const FVector& Direction) const;

@@ -11,6 +11,7 @@
 #include "EnhancedInputComponent.h"
 #include "Component/AttackComponent.h"
 #include "DataAsset/InputData.h"
+#include "Component/StaminaComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -30,21 +31,25 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	bPlayerWidget = CreateWidget<UPlayerWidget>(GetWorld(), PlayerWidgetClass);
 
-	if (bPlayerWidget != nullptr && HealthComponent != nullptr) {
+	if (bPlayerWidget != nullptr && HealthComponent != nullptr && StaminaComponent != nullptr) {
 		bPlayerWidget->AddToViewport();
 		bPlayerWidget->UpdateHealthBar_Player(HealthComponent->Health, HealthComponent->MaxHealth);
+
+		bPlayerWidget->UpdateStaminaBar_Player(StaminaComponent->Stamina, StaminaComponent->MaxStamina);
 		bPlayerWidget->HideEnemyStat();
 	}
 }
 
-void APlayerCharacter::I_EnterCombat(float Health_Target, float MaxHealth_Target)
+void APlayerCharacter::I_EnterCombat(float Health_Target, float MaxHealth_Target, float Stamina_Target, float MaxStamina_Target)
 {
+	if (CharacterData)
+		ChangeWalkSpeed(CharacterData->CombatSpeed);
+
 	if (bPlayerWidget != nullptr && HealthComponent != nullptr) {
 		bPlayerWidget->ShowEnemyStat();
 		bPlayerWidget->UpdateHealthBar_Enemy(Health_Target, MaxHealth_Target);
+		bPlayerWidget->UpdateStaminaBar_Enemy(Stamina_Target, MaxStamina_Target);
 	}
-	if (CharacterData)
-		ChangeWalkSpeed(CharacterData->CombatSpeed);
 }
 
 void APlayerCharacter::I_ExitCombat()
@@ -66,6 +71,32 @@ void APlayerCharacter::I_HandleTargetDestroy()
 	if (bPlayerWidget != nullptr) {
 		bPlayerWidget->HideEnemyStat();
 	}
+}
+
+void APlayerCharacter::I_HandleAttackSuccess()
+{
+	Super::I_HandleAttackSuccess();
+	if (bPlayerWidget)
+		bPlayerWidget->UpdateStaminaBar_Player(StaminaComponent->Stamina, StaminaComponent->MaxStamina);
+}
+
+void APlayerCharacter::I_HandleTargetAttackSuccess(float Stamina_Target, float MaxStamina_Target)
+{
+	if (bPlayerWidget)
+		bPlayerWidget->UpdateStaminaBar_Enemy(Stamina_Target, MaxStamina_Target);
+}
+
+void APlayerCharacter::I_StaminaUpdate()
+{
+	Super::I_StaminaUpdate();
+	if (bPlayerWidget)
+		bPlayerWidget->UpdateStaminaBar_Player(StaminaComponent->Stamina, StaminaComponent->MaxStamina);
+}
+
+void APlayerCharacter::I_HandleStaminaUpdateTarget(float Stamina_Target, float MaxStamina_Target)
+{
+	if (bPlayerWidget)
+		bPlayerWidget->UpdateStaminaBar_Enemy(Stamina_Target, MaxStamina_Target);
 }
 
 
@@ -141,10 +172,14 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::Attack(const FInputActionValue& Value)
 {
+	AttackComponent->RequestAttackType = EAttackType::Normal;
 	I_RequestAttack();
-	//if (AttackComponent) {
-	//	AttackComponent->RequestAttack();
-	//}
+}
+
+void APlayerCharacter::StrongAttack(const FInputActionValue& Value)
+{
+	AttackComponent->RequestAttackType = EAttackType::Strong;
+	I_RequestAttack();
 }
 
 void APlayerCharacter::ExitCombat(const FInputActionValue& Value)
@@ -229,6 +264,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 			// Attack
 			EnhancedInputComponent->BindAction(InputData->AttackAction, ETriggerEvent::Started, this, &APlayerCharacter::Attack);
+			EnhancedInputComponent->BindAction(InputData->StrongAttackAction, ETriggerEvent::Started, this, &APlayerCharacter::StrongAttack);
 		}
 	}
 }

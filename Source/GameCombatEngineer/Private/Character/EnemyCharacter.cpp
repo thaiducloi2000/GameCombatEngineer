@@ -6,6 +6,7 @@
 #include "DataAsset/CharacterData.h"
 #include "Controller/EnemyAIController.h"
 #include "Component/HealthComponent.h"
+#include "Component/StaminaComponent.h"
 
 FVector AEnemyCharacter::I_GetPatrolLocation()
 {
@@ -29,8 +30,8 @@ void AEnemyCharacter::I_HandleSeePlayer(AActor* PlayerActor)
 	if (Attacker->I_OnExitCombat.IsBound() == false)
 		Attacker->I_OnExitCombat.BindDynamic(this, &AEnemyCharacter::HandlePlayerExitCombat);
 
-	if (HealthComponent) {
-		Attacker->I_EnterCombat(HealthComponent->Health, HealthComponent->MaxHealth);
+	if (HealthComponent && StaminaComponent) {
+		Attacker->I_EnterCombat(HealthComponent->Health, HealthComponent->MaxHealth, StaminaComponent->Stamina, StaminaComponent->MaxStamina);
 	}
 }
 
@@ -49,6 +50,20 @@ void AEnemyCharacter::Destroyed()
 	}
 
 	Super::Destroyed();
+}
+
+void AEnemyCharacter::I_HandleAttackSuccess()
+{
+	Super::I_HandleAttackSuccess();
+	if (Attacker && StaminaComponent)
+		Attacker->I_HandleTargetAttackSuccess(StaminaComponent->Stamina, StaminaComponent->MaxStamina);
+}
+
+void AEnemyCharacter::I_StaminaUpdate()
+{
+	if (Attacker && StaminaComponent) {
+		Attacker->I_HandleStaminaUpdateTarget(StaminaComponent->Stamina, StaminaComponent->MaxStamina);
+	}
 }
 
 void AEnemyCharacter::HandlePlayerExitCombat()

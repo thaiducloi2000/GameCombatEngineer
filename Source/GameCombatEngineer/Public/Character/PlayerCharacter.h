@@ -19,11 +19,15 @@ public:
 	APlayerCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void BeginPlay() override;
-	virtual void I_EnterCombat(float Health_Target, float MaxHealth_Target) override;
+	virtual void I_EnterCombat(float Health_Target, float MaxHealth_Target, float Stamina_Target, float MaxStamina_Target) override;
 	virtual void I_ExitCombat() override;
 
 	virtual void I_HitTarget(float Health_Target, float MaxHealth_Target) override;
 	virtual void I_HandleTargetDestroy() override;
+	virtual void I_HandleAttackSuccess() override;
+	virtual void I_HandleTargetAttackSuccess(float Stamina_Target, float MaxStamina_Target) override;
+	virtual void I_StaminaUpdate() override;
+	virtual void I_HandleStaminaUpdateTarget(float Stamina_Target, float MaxStamina_Target) override;
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
@@ -49,6 +53,7 @@ private:
 	/* Called for attack input*/
 	void Attack(const FInputActionValue& Value);
 
+	void StrongAttack(const FInputActionValue& Value);
 	/* Called for run input*/
 	void ExitCombat(const FInputActionValue& Value);
 

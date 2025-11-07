@@ -24,6 +24,8 @@ public:
 	virtual void I_HandleLostPlayer(AActor* PlayerActor) override;
 
 	virtual void Destroyed() override;
+	virtual void I_HandleAttackSuccess() override;
+	virtual void I_StaminaUpdate() override;
 private: 
 	UFUNCTION()
 	void HandlePlayerExitCombat();

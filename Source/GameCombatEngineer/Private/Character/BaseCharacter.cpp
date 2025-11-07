@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "DataAsset/InputData.h"
 #include "Components/CapsuleComponent.h"
+#include "Component/StaminaComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -25,6 +26,7 @@ ABaseCharacter::ABaseCharacter()
 
 	AttackComponent = CreateDefaultSubobject<UAttackComponent>(TEXT("Attack Component"));
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+	StaminaComponent = CreateDefaultSubobject<UStaminaComponent>(TEXT("Stamina Component"));
 }
 void ABaseCharacter::I_PlayAttackMontage(UAnimMontage* AttackMontage)
 {
@@ -70,6 +72,26 @@ void ABaseCharacter::ChangeWalkSpeed(float NewSpeed)
 {
 	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 }
+void ABaseCharacter::I_HandleAttackSuccess()
+{
+	if (StaminaComponent && CharacterData)
+		StaminaComponent->UpdateStamina(CharacterData->CostStaminaPerAttack);
+}
+bool ABaseCharacter::I_IsReadyAttack() const
+{
+	return bCombatState == ECombatState::Ready;
+}
+bool ABaseCharacter::I_CheckEnoughStamina(float Cost) const
+{
+	if (StaminaComponent == nullptr) return false;
+
+	return StaminaComponent->Stamina >= Cost;
+}
+bool ABaseCharacter::I_IsAttacking() const
+{
+	if (AttackComponent == nullptr) return false;
+	return AttackComponent ->bIsAttacking;
+}
 void ABaseCharacter::NotifyControllerChanged()
 {
 	Super::NotifyControllerChanged();
@@ -91,6 +113,10 @@ void ABaseCharacter::PostInitializeComponents()
 
 	if (HealthComponent != nullptr && CharacterData != nullptr) {
 		HealthComponent->SetupComponent(CharacterData);
+	}
+
+	if (StaminaComponent != nullptr) {
+		StaminaComponent->SetupComponent(CharacterData);
 	}
 }
 

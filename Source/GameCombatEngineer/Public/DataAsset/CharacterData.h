@@ -18,6 +18,9 @@ class GAMECOMBATENGINEER_API UCharacterData : public UDataAsset
 public:
 	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	TArray<UAnimMontage*> AttackMontages;
+
+	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* StrongAttackMontages;
 #pragma region Animation Montage
 
 	UPROPERTY(EditDefaultsOnly, Category = Animation, meta = (AllowPrivateAccess = "true"))
@@ -106,4 +109,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	float MaxHealth = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float Stamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float MaxStamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float RegenSpeed;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
+	float CostStaminaPerAttack = 20.0f;
 };

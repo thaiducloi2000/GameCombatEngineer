@@ -22,12 +22,26 @@ void UPlayerWidget::UpdateHealthBar_Enemy(float Health, float MaxHealth)
 		HealthText_Enemy->SetText(FText::FromString(healthString));
 }
 
+void UPlayerWidget::UpdateStaminaBar_Player(float Stamina, float MaxStamina)
+{
+	if (StaminaBar_Player)
+		StaminaBar_Player->SetPercent(Stamina / MaxStamina);
+}
+
+void UPlayerWidget::UpdateStaminaBar_Enemy(float Stamina, float MaxStamina)
+{
+	if (StaminaBar_Enemy)
+		StaminaBar_Enemy->SetPercent(Stamina / MaxStamina);
+}
+
 void UPlayerWidget::ShowEnemyStat()
 {
 	if (HealthBar_Enemy)
 		HealthBar_Enemy->SetVisibility(ESlateVisibility::Visible);
-	if(HealthText_Enemy)
-	HealthText_Enemy->SetVisibility(ESlateVisibility::Visible);
+	if (HealthText_Enemy)
+		HealthText_Enemy->SetVisibility(ESlateVisibility::Visible);
+	if(StaminaBar_Enemy)
+		StaminaBar_Enemy->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UPlayerWidget::HideEnemyStat()
@@ -36,4 +50,6 @@ void UPlayerWidget::HideEnemyStat()
 		HealthBar_Enemy->SetVisibility(ESlateVisibility::Hidden);
 	if (HealthText_Enemy)
 		HealthText_Enemy->SetVisibility(ESlateVisibility::Hidden);
+	if (StaminaBar_Enemy)
+		StaminaBar_Enemy->SetVisibility(ESlateVisibility::Hidden);
 }

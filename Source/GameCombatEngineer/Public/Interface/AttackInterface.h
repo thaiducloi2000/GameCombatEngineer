@@ -33,12 +33,22 @@ public:
 	virtual void I_ANS_BeginTraceHit() = 0;
 	virtual void I_ANS_Combo() = 0;
 
-	virtual void I_EnterCombat(float Health_Target,float MaxHealth_Target);
+	virtual void I_EnterCombat(float Health_Target,float MaxHealth_Target, float Stamina_Target, float MaxStamina_Target);
 	virtual void I_ExitCombat();
 	virtual void I_HitTarget(float Health_Target, float MaxHealth_Target);
 
 	virtual void I_EndHitReact() = 0;
 	virtual void I_HandleTargetDestroy();
+
+	virtual void I_HandleAttackSuccess() = 0;
+	virtual void I_HandleTargetAttackSuccess(float Stamina_Target, float MaxStamina_Target);
+	virtual bool I_IsReadyAttack() const = 0;
+	virtual bool I_CheckEnoughStamina(float Cost) const = 0;
+
+	virtual void I_StaminaUpdate();
+	virtual void I_HandleStaminaUpdateTarget(float Stamina_Target, float MaxStamina_Target);
+	virtual bool I_IsAttacking() const = 0;
+
 	UFUNCTION(BlueprintCallable)
 	virtual void I_RequestAttack() = 0;
 };

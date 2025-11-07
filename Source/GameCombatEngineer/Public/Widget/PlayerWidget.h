@@ -17,6 +17,9 @@ class GAMECOMBATENGINEER_API UPlayerWidget : public UUserWidget
 public:
 	void UpdateHealthBar_Player(float Health, float MaxHealth);
 	void UpdateHealthBar_Enemy(float Health, float MaxHealth);
+
+	void UpdateStaminaBar_Player(float Stamina, float MaxStamina);
+	void UpdateStaminaBar_Enemy(float Stamina, float MaxStamina);
 	void ShowEnemyStat();
 	void HideEnemyStat();
 private: 
@@ -28,4 +31,10 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* HealthText_Enemy;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* StaminaBar_Player;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* StaminaBar_Enemy;
 };

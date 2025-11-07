@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Interface/AttackInterface.h"
+#include "Enum/AttackType.h"
 #include "AttackComponent.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FHitSomethingDelegate, const FHitResult&, HitResult);
@@ -21,8 +22,8 @@ class GAMECOMBATENGINEER_API UAttackComponent : public UActorComponent
 
 public:
 	UAttackComponent();
-	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void RequestAttack();
+	bool CanAttack() const;
 	void Attack();
 	void EndAttack();
 	void Combo();
@@ -36,6 +37,8 @@ private:
 	UAnimMontage* GetAttackMontage();
 public:
 	FHitSomethingDelegate HitSomethingDelegate;
+	EAttackType RequestAttackType = EAttackType::Normal;
+	bool bIsAttacking = false;
 private:
 	UPROPERTY()
 	TScriptInterface<IAttackInterface> AttackInterface;
@@ -43,7 +46,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UCharacterData* CharacterData;
 
-	bool bIsAttacking = false;
 
 	TArray<AActor*> HittedActor;
 	bool bCanCombo = false;
