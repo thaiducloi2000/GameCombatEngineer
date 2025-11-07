@@ -43,6 +43,7 @@ protected:
 		const class UDamageType* DamageType,
 		AActor* DamageCauser) override;
 	virtual void HandleDead() override;
+	virtual void HandleBeaten(const FVector& HitLocation, const FVector& ShotFromDirection) override;
 private:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);

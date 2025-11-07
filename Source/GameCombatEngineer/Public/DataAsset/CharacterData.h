@@ -122,4 +122,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = "true"))
 	float CostStaminaPerAttack = 20.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera Effect", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UCameraShakeBase> CameraShakeClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera Effect", meta = (AllowPrivateAccess = "true"))
+	float ShakeScale = 1.0f;
 };

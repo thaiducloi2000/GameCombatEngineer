@@ -12,6 +12,7 @@
 #include "Component/AttackComponent.h"
 #include "DataAsset/InputData.h"
 #include "Component/StaminaComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -125,6 +126,17 @@ void APlayerCharacter::HandleDead()
 	auto PlayerControler = Cast<APlayerController>(GetController());
 	if (PlayerControler)
 		DisableInput(PlayerControler);
+}
+
+void APlayerCharacter::HandleBeaten(const FVector& HitLocation, const FVector& ShotFromDirection)
+{
+	Super::HandleBeaten(HitLocation, ShotFromDirection);
+
+	auto CameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+
+	if (CameraManager) {
+		CameraManager->StartCameraShake(CharacterData->CameraShakeClass, CharacterData->ShakeScale);
+	}
 }
 
 void APlayerCharacter::Move(const FInputActionValue& Value)
