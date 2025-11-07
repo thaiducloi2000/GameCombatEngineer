@@ -90,7 +90,7 @@ bool ABaseCharacter::I_CheckEnoughStamina(float Cost) const
 bool ABaseCharacter::I_IsAttacking() const
 {
 	if (AttackComponent == nullptr) return false;
-	return AttackComponent ->bIsAttacking;
+	return AttackComponent->bIsAttacking;
 }
 void ABaseCharacter::NotifyControllerChanged()
 {
@@ -172,8 +172,10 @@ void ABaseCharacter::HandleHitSomething(const FHitResult& HitResult)
 
 void ABaseCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser)
 {
-	if (HealthComponent)
-		HealthComponent->UpdateHealthByDamage(Damage);
+	if (HealthComponent == nullptr) return;
+
+	HealthComponent->UpdateHealthByDamage(Damage);
+
 	if (HealthComponent->Health > 0.0f)
 		HandleBeaten(HitLocation, ShotFromDirection);
 	else
@@ -183,10 +185,23 @@ void ABaseCharacter::HandleTakePointDamage(AActor* DamagedActor, float Damage, A
 void ABaseCharacter::HandleBeaten(const FVector& HitLocation, const FVector& ShotFromDirection)
 {
 	if (CharacterData == nullptr) return;
+
 	UGameplayStatics::SpawnEmitterAtLocation(
 		GetWorld(),
 		CharacterData->HitImpactEffect,
 		HitLocation
+	);
+
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		CharacterData->HitImpactSound,
+		HitLocation
+	);
+
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		CharacterData->PainSound,
+		GetActorLocation()
 	);
 
 	PlayAnimMontage(GetDirectHitReactMontage(ShotFromDirection));

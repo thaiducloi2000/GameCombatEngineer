@@ -134,7 +134,7 @@ void APlayerCharacter::HandleBeaten(const FVector& HitLocation, const FVector& S
 
 	auto CameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
 
-	if (CameraManager) {
+	if (CameraManager && CharacterData) {
 		CameraManager->StartCameraShake(CharacterData->CameraShakeClass, CharacterData->ShakeScale);
 	}
 }

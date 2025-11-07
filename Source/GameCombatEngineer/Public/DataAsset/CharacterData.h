@@ -43,6 +43,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* HitImpactEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (AllowPrivateAccess = "true"))
+	USoundBase* HitImpactSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = Effect, meta = (AllowPrivateAccess = "true"))
+	USoundBase* PainSound;
 #pragma endregion
 
 
