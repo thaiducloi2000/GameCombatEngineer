@@ -48,35 +48,58 @@ The architecture emphasizes **data-driven design**, scalability, and code reusab
 ```
 GameCombatEngineer/
 │
-├── Source/GameCombatEngineer/
-│   ├── Character/
-│   │   ├── BaseCharacter.h / .cpp     ← main playable character
-│   │   └── EnemyCharacter.h / .cpp    ← basic AI enemy
-│   │
-│   ├── Component/
-│   │   └── AttackComponent.h / .cpp   ← core attack logic
-│   │
-│   ├── DataAsset/
-│   │   ├── InputData.h / .cpp         ← input mapping context
-│   │   └── CharacterData.h / .cpp     ← movement/combat config
-│   │
-│   ├── Interface/
-│   │   └── AttackInterface.h          ← interface for combat interaction
-│   │
-│   ├── AI/
-│   │   ├── EnemyAIController.h / .cpp
-│   │   └── BehaviorTree/
-│   │       ├── BT_EnemyBehavior
-│   │       └── Tasks/
-│   │
-│   └── GameCombatEngineer.Build.cs
+├── Source/
+│ └── GameCombatEngineer/
+│ ├── Private/ ← Implementation (.cpp)
+│ ├── Public/ ← Headers (.h)
+│ │
+│ │── AnimCallback/ ← Animation Notify & Montage events
+│ │ ├── AN_EndHitReact.h ← Notify for hit-react end
+│ │ ├── AN_OnAttackCallback.h ← Notify for attack hit events
+│ │ ├── AN_State_Trace.h ← Notify for trace state transitions
+│ │ └── Combo_AN.h ← Notify for combo chain control
+│ │
+│ │── Character/ ← Character logic & base classes
+│ │ ├── BaseCharacter.h ← Base class for all characters
+│ │ ├── CharacterAnimationInstance.h ← Custom anim instance
+│ │ ├── EnemyCharacter.h ← Enemy implementation
+│ │ └── PlayerCharacter.h ← Player implementation
+│ │
+│ │── Component/ ← Modular gameplay components
+│ │ ├── AttackComponent.h ← Handles attack + trace logic
+│ │ ├── HealthComponent.h ← Health management & damage events
+│ │ └── StaminaComponent.h ← Stamina & energy system
+│ │
+│ │── Controller/ ← AI & player controller logic
+│ │ └── EnemyAIController.h ← Basic enemy AI controller
+│ │
+│ │── DataAsset/ ← Configurable gameplay data
+│ │ ├── CharacterData.h ← Movement & stat tuning
+│ │ └── InputData.h ← Input mapping context / actions
+│ │
+│ │── Enum/ ← Game-specific enumerations
+│ │ ├── AIState.h ← Enemy AI behavior states
+│ │ ├── AttackType.h ← Attack classification (Light/Heavy)
+│ │ └── CombatState.h ← Combat state tracking
+│ │
+│ │── Interface/ ← Interfaces for modular design
+│ │ ├── AttackInterface.h ← Interface for attack logic access
+│ │ └── EnemyInterface.h ← Interface for enemy behaviors
+│ │
+│ │── Widget/ ← UI logic and UMG bindings
+│ │ └── PlayerWidget.h ← Player HUD / combo counter
+│ │
+│ ├── GameCombatEngineer.cpp
+│ └── GameCombatEngineer.Build.cs
 │
-└── Content/
-    ├── Animations/
-    ├── Montages/
-    ├── Blueprints/
-    ├── DataAssets/
-    └── AI/
+├── Config/ ← Default engine/project settings
+└── Content/ ← Assets: animation, BP, AI, UI, etc.
+├── Animations/
+├── Montages/
+├── Blueprints/
+├── DataAssets/
+├── AI/
+└── UI/
 ```
 
 ---
@@ -130,10 +153,8 @@ GameCombatEngineer/
 ## 🧩 Next Steps
 
 * Implement **Air Combo System (2+ attacks)**
-* Add **Stamina system & attack cost**
-* Integrate **Camera Shake** and **Impact feedback**
 * Introduce **DoT / Poison effect** system
-* Expand **HUD** for HP, Stamina, and Combo display
+* Expand **HUD** for Combo display
 
 ---
 
